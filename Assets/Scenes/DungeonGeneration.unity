@@ -245,7 +245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floor: {fileID: 2666962294904100635, guid: adf66ea3abcc56f408deeafa1956b114, type: 3}
   wall: {fileID: 334801187943488097, guid: ccfa81bd6b8f0b246856a8b157c9cf98, type: 3}
-  roomCount: 7
+  roomCount: 10
   roomSizeMin: {x: 8, y: 8}
   roomSizeMax: {x: 20, y: 20}
   gridWidth: 100

@@ -5,11 +5,11 @@ public class DungeonGenerator : MonoBehaviour
 {
     public GameObject floor;
     public GameObject wall;
-    public int roomCount = 7;
-    public Vector2Int roomSizeMin = new Vector2Int(8, 8);
-    public Vector2Int roomSizeMax = new Vector2Int(20, 20);
-    public int gridWidth = 100;
-    public int gridHeight = 100;
+    public int roomCount;
+    public Vector2Int roomSizeMin;
+    public Vector2Int roomSizeMax;
+    public int gridWidth;
+    public int gridHeight;
 
     private HashSet<Vector2Int> floorPositions = new HashSet<Vector2Int>();
     private HashSet<Vector2Int> wallPositions = new HashSet<Vector2Int>();

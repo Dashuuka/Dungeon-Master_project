@@ -6,6 +6,8 @@ public class PlayerBehaviourScript : MonoBehaviour
     private Rigidbody2D body;
     private Animator anim;
 
+    private Vector2 movement;
+
 
 
     private void Awake()
@@ -17,21 +19,21 @@ public class PlayerBehaviourScript : MonoBehaviour
 
     private void Update()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-        body.velocity =new Vector2(horizontalInput*speed, verticalInput * speed);
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
+        body.velocity = movement.normalized * speed;
 
         //Flip Player Facing Left Right
-        if (horizontalInput > 0)
+        if (movement.x > 0)
         {
             transform.localScale = Vector3.one;
         }
-        else if (horizontalInput < 0)
+        else if (movement.x < 0)
         {
             transform.localScale = new Vector3(-1,1,1); 
         }
 
 
-        anim.SetBool("Run",horizontalInput!=0 || verticalInput!=0);
+        anim.SetBool("Run", movement.magnitude != 0);
     }
 }
