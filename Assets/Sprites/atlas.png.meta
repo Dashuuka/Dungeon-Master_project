@@ -6267,11 +6267,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 332
-        width: 5
-        height: 44
+        y: 354
+        width: 16
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -7085,10 +7085,10 @@ TextureImporter:
       name: atlas_330
       rect:
         serializedVersion: 2
-        x: 37
-        y: 360
-        width: 22
-        height: 16
+        x: 48
+        y: 354
+        width: 16
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -7107,9 +7107,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 376
-        width: 32
-        height: 4
+        y: 328
+        width: 16
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -7127,10 +7127,10 @@ TextureImporter:
       name: atlas_332
       rect:
         serializedVersion: 2
-        x: 59
-        y: 332
-        width: 5
-        height: 44
+        x: 48
+        y: 328
+        width: 16
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -7140,27 +7140,6 @@ TextureImporter:
       bones: []
       spriteID: 0e17f84c05641264f827f31a275d2629
       internalID: -1793339391
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: atlas_333
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 328
-        width: 32
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 57bd38d28f7248145b4b8c0a0df9f526
-      internalID: -1068358896
       vertices: []
       indices: 
       edges: []
