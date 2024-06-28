@@ -7270,6 +7270,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: atlas_339
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 82
+        width: 5
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 400073e749228b847a55c2d3699c5547
+      internalID: 878763981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -7548,6 +7569,7 @@ TextureImporter:
       atlas_336: 635476421
       atlas_337: -405843276
       atlas_338: 93685978
+      atlas_339: 878763981
       atlas_34: -429850299
       atlas_35: 271596785
       atlas_36: 1941030638
