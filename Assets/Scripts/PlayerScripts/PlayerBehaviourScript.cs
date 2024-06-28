@@ -17,7 +17,7 @@ public class PlayerBehaviourScript : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
