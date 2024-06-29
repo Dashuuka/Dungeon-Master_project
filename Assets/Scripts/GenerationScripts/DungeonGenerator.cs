@@ -12,9 +12,8 @@ public class DungeonGenerator : MonoBehaviour
     public Vector2Int roomSizeMax;
     public int gridWidth;
     public int gridHeight;
-    public GameObject player; // Ссылка на объект игрока
-    public GameObject exitPrefab; // Ссылка на префаб выхода
-    public GameObject stairsDownPrefab; // Ссылка на префаб лестницы вниз
+    public GameObject player;
+    public GameObject stairsDownPrefab;
 
     private HashSet<Vector2Int> floorPositions = new HashSet<Vector2Int>();
     private HashSet<Vector2Int> wallPositions = new HashSet<Vector2Int>();
@@ -187,7 +186,6 @@ public class DungeonGenerator : MonoBehaviour
             // Размещение игрока и выхода в первой комнате
             Vector2Int startRoomCenter = GetRoomCenter(rooms[0]);
             player.transform.position = new Vector3(startRoomCenter.x, startRoomCenter.y, 0);
-            Instantiate(exitPrefab, new Vector3(startRoomCenter.x + 1, startRoomCenter.y, 0), Quaternion.identity);
 
             // Найти самую далекую комнату от стартовой
             RectInt furthestRoom = GetFurthestRoom(startRoomCenter, rooms);

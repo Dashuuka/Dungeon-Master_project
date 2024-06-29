@@ -6,22 +6,23 @@ using UnityEngine.UI;
 public class HealthManager : MonoBehaviour
 {
     public Image healthBar;
-    public float healthAmount = 50f;
+    public float healthAmount;
+    public float maxHealth;
 
-    void Update()
-    {
-        
+    void Awake(){
+        healthAmount = maxHealth;
     }
+
     public void TakeDamage (float damage)
     {
         healthAmount -= damage;
-        healthBar.fillAmount = healthAmount/100f;
+        healthBar.fillAmount = healthAmount/maxHealth;
 
     }
     public void Heal (float healingAmount)
     {
         healthAmount += healingAmount;
-        healthAmount = Mathf.Clamp(healthAmount, 0, 100);
-        healthBar.fillAmount = healingAmount/100f;  
+        healthAmount = Mathf.Clamp(healthAmount, 0, maxHealth);
+        healthBar.fillAmount = healingAmount/maxHealth;  
     }
 }

@@ -18,6 +18,11 @@ public class EnemyAI : MonoBehaviour
     public float patrolRadius;
     public LayerMask obstacleLayer;
 
+    public float damage;
+
+    public float healthAmount;
+    public float maxHealth;
+
     private Transform player;
     private Rigidbody2D rb;
     private float lastAttackTime;
@@ -30,7 +35,7 @@ public class EnemyAI : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
-    private Vector2 rayDirection;
+    private EnemyManager enemyManager;
 
     // Цвета для разных состояний
     private Color idleColor = Color.white;
@@ -44,6 +49,11 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        healthAmount = maxHealth;
+        playerHealthManager = player.GetComponent<HealthManager>();
+
+        enemyManager = GameObject.FindGameObjectWithTag("EnemyManager").GetComponent<EnemyManager>();
+        enemyManager.addToList(gameObject);
         
         SetState(EnemyState.Idle);
     }
@@ -204,8 +214,7 @@ public class EnemyAI : MonoBehaviour
     void MeleeAttack()
     {
         Debug.Log("Melee attack!");
-        playerHealthManager=player.GetComponent<HealthManager>();
-        playerHealthManager.TakeDamage(10);
+        playerHealthManager.TakeDamage(damage);
 
         // Implement melee attack logic here
     }
@@ -213,8 +222,7 @@ public class EnemyAI : MonoBehaviour
     void RangedAttack()
     {
         Debug.Log("Ranged attack!");
-        playerHealthManager = player.GetComponent<HealthManager>();
-        playerHealthManager.TakeDamage(20);
+        playerHealthManager.TakeDamage(damage);
     }
 
     void Patrol()
@@ -251,6 +259,27 @@ public class EnemyAI : MonoBehaviour
         {
             SetNewPatrolDirection();
         }
+    }
+
+    public void TakeDamage (float damage)
+    {
+        healthAmount -= damage;
+
+        if(healthAmount <= 0){
+            Die();
+        }
+
+    }
+
+    public void Heal (float healingAmount)
+    {
+        healthAmount += healingAmount;
+        healthAmount = Mathf.Clamp(healthAmount, 0, maxHealth);
+    }
+
+    void Die(){
+        enemyManager.removeFromList(gameObject);
+        Destroy(gameObject);
     }
 
     void UpdateVisuals(){
