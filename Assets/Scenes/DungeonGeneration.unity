@@ -122,37 +122,32 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &563425122
+--- !u!1 &65645214 stripped
 GameObject:
+  m_CorrespondingSourceObject: {fileID: 3019020416812800452, guid: 1d1f0e3c2274dfd4992ecabd80ceee19, type: 3}
+  m_PrefabInstance: {fileID: 632517104}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &65645220
+Animator:
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 563425124}
-  m_Layer: 0
-  m_Name: HealthManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &563425124
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 563425122}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 120.67723, y: 28.468311, z: -3.435243}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1022959698}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 65645214}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6a68c28fc382cfa4180dacb5ca2766fc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &599180730
 GameObject:
   m_ObjectHideFlags: 3
@@ -300,7 +295,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3019020416812800452, guid: 1d1f0e3c2274dfd4992ecabd80ceee19, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 65645220}
   m_SourcePrefab: {fileID: 100100000, guid: 1d1f0e3c2274dfd4992ecabd80ceee19, type: 3}
 --- !u!1 &796372101
 GameObject:
@@ -657,13 +655,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4250145774030954736, guid: 7b3de9073ebb9594e9d8eb47b8db1603, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 563425124}
-    - targetCorrespondingSourceObject: {fileID: 4250145774030954736, guid: 7b3de9073ebb9594e9d8eb47b8db1603, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1488655883}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4480023076726636810, guid: 7b3de9073ebb9594e9d8eb47b8db1603, type: 3}
       insertIndex: -1
@@ -703,7 +695,7 @@ RectTransform:
   - {fileID: 1764684537}
   - {fileID: 1892384335}
   - {fileID: 2024644615}
-  m_Father: {fileID: 1022959698}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -744,7 +736,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -759,8 +751,8 @@ Canvas:
   m_GameObject: {fileID: 1488655882}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 796372103}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -771,7 +763,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!1 &1764684536
 GameObject:
@@ -1072,6 +1064,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1088339386}
   - {fileID: 796372104}
+  - {fileID: 1488655883}
   - {fileID: 1427931904}
   - {fileID: 910114297}
   - {fileID: 632517104}
