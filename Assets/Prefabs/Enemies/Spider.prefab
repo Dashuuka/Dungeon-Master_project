@@ -113,6 +113,9 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 128
+  damage: 5
+  healthAmount: 70
+  maxHealth: 70
 --- !u!50 &2495200958419160326
 Rigidbody2D:
   serializedVersion: 4
