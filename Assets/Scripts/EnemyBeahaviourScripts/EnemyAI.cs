@@ -267,6 +267,7 @@ public class EnemyAI : MonoBehaviour
 
         if(healthAmount <= 0){
             Die();
+            print("kkfkdffd");
         }
 
     }
@@ -278,8 +279,9 @@ public class EnemyAI : MonoBehaviour
     }
 
     void Die(){
-        enemyManager.removeFromList(gameObject);
+
         Destroy(gameObject);
+        enemyManager.removeFromList(gameObject);
     }
 
     void UpdateVisuals(){
