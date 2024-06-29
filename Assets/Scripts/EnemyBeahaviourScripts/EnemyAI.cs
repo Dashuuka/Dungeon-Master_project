@@ -28,6 +28,7 @@ public class EnemyAI : MonoBehaviour
     private float patrolWaitTimer;
     private EnemyState currentState = EnemyState.Idle;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
     private Vector2 rayDirection;
 
@@ -42,6 +43,7 @@ public class EnemyAI : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         
         SetState(EnemyState.Idle);
     }
@@ -115,6 +117,8 @@ public class EnemyAI : MonoBehaviour
                 }
             break;
         }
+
+        UpdateVisuals();
     }
 
     void SetState(EnemyState newState)
@@ -246,6 +250,19 @@ public class EnemyAI : MonoBehaviour
         if (currentState == EnemyState.Patrolling && ((1 << collision.gameObject.layer) & obstacleLayer) != 0)
         {
             SetNewPatrolDirection();
+        }
+    }
+
+    void UpdateVisuals(){
+        animator.SetBool("Run", rb.velocity.magnitude != 0);
+
+        if (rb.velocity.x > 0)
+        {
+            transform.localScale = Vector3.one;
+        }
+        else if (rb.velocity.x < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
