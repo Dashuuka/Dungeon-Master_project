@@ -14,12 +14,17 @@ public class GunBehaviour : MonoBehaviour
 
         if (Time.time > nextFireTime)
         {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = transform.position.z;
 
-            firePoint.rotation = Quaternion.Euler(firePoint.rotation.eulerAngles + new Vector3(0, 0, 270));
+            Vector3 direction = mousePosition - transform.parent.position;
+
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+
+            firePoint.rotation = Quaternion.Euler(new Vector3(0, 0, angle + 270f));
+            
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-
-            Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position;
-            direction.z = 0;
 
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             if (rb != null)
