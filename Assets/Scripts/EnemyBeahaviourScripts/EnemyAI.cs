@@ -1,10 +1,11 @@
 using UnityEngine;
-
+using static HealthManager;
 public class EnemyAI : MonoBehaviour
 {
     public enum EnemyType { Melee, Ranged }
     public enum EnemyState { Idle, Patrolling, Chasing, Attacking }
 
+    private HealthManager playerHealthManager;
     public EnemyType enemyType;
     public float detectionRadius;
     public float attackRange;
@@ -199,13 +200,17 @@ public class EnemyAI : MonoBehaviour
     void MeleeAttack()
     {
         Debug.Log("Melee attack!");
+        playerHealthManager=player.GetComponent<HealthManager>();
+        playerHealthManager.TakeDamage(10);
+
         // Implement melee attack logic here
     }
 
     void RangedAttack()
     {
         Debug.Log("Ranged attack!");
-        // Implement ranged attack logic here
+        playerHealthManager = player.GetComponent<HealthManager>();
+        playerHealthManager.TakeDamage(20);
     }
 
     void Patrol()

@@ -5,7 +5,7 @@ public class PlayerBehaviourScript : MonoBehaviour
     [SerializeField] private float speed = 7;
     private Rigidbody2D body;
     private Animator anim;
-
+    private HealthManager healthManager;
     private Vector2 movement;
 
 
@@ -15,6 +15,7 @@ public class PlayerBehaviourScript : MonoBehaviour
         // Take properties from player 
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        healthManager = GetComponent<HealthManager>();
     }
 
     private void FixedUpdate()
