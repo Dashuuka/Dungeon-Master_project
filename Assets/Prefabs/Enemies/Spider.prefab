@@ -101,10 +101,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
-  detectionRadius: 8
+  maxHealth: 70
+  healthAmount: 70
+  damage: 5
   attackRange: 1
   attackCooldown: 1
   movementSpeed: 3.5
+  detectionRadius: 8
   exclamationMarkPrefab: {fileID: 4612148735362323830, guid: b5c975f7a5990d94383c3c8f892d4c2f, type: 3}
   patrolSpeed: 3
   patrolDuration: 2
@@ -113,9 +116,11 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 128
-  damage: 5
-  healthAmount: 70
-  maxHealth: 70
+  idleColor: {r: 1, g: 1, b: 1, a: 1}
+  patrolColor: {r: 0, g: 1, b: 0, a: 1}
+  chasingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  attackingColor: {r: 1, g: 0, b: 0, a: 1}
+  searchingColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!50 &2495200958419160326
 Rigidbody2D:
   serializedVersion: 4

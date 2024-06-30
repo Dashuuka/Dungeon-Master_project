@@ -1,47 +1,56 @@
 using UnityEngine;
-using static HealthManager;
+
 public class EnemyAI : MonoBehaviour
 {
     public enum EnemyType { Melee, Ranged }
-    public enum EnemyState { Idle, Patrolling, Chasing, Attacking }
+    public enum EnemyState { Idle, Patrolling, Chasing, Searching, Attacking }
 
-    private HealthManager playerHealthManager;
+    [Header("Characteristics")]
     public EnemyType enemyType;
-    public float detectionRadius;
+    [Space]
+    public float maxHealth;
+    public float healthAmount;
+    [Space]
+    public float damage;
     public float attackRange;
     public float attackCooldown;
+    private float lastAttackTime;
+    [Space]
     public float movementSpeed;
+    [Space]
+    public float detectionRadius;
+
+    [Header("Patrol")]
     public GameObject exclamationMarkPrefab;
+    [Space]
     public float patrolSpeed;
     public float patrolDuration;
     public float patrolWaitTime;
     public float patrolRadius;
+    [Space]
     public LayerMask obstacleLayer;
-
-    public float damage;
-
-    public float healthAmount;
-    public float maxHealth;
-
-    private Transform player;
-    private Rigidbody2D rb;
-    private float lastAttackTime;
-    private bool isPlayerDetected = false;
-    private Vector2 distanceToPlayer;
     private Vector2 patrolDirection;
     private float patrolTimer;
     private float patrolWaitTimer;
+    private Vector2 distanceToPlayer;
+    private Vector3 playerColliderOffset = new Vector3(0, -0.3f, 0);
+    private Vector3 lastKnownPlayerPosition;
+    private bool sawPlayer = false;
+
+    [Header("States")]
+    public Color idleColor = Color.white;
+    public Color patrolColor = Color.green;
+    public Color chasingColor = Color.yellow;
+    public Color attackingColor = Color.red;
+    public Color searchingColor = Color.blue;
     private EnemyState currentState = EnemyState.Idle;
+
+    [Header("Components")]
+    private Transform player;
     private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb;
     private Animator animator;
-
     private EnemyManager enemyManager;
-
-    // Цвета для разных состояний
-    private Color idleColor = Color.white;
-    private Color patrolColor = Color.green;
-    private Color chasingColor = Color.yellow;
-    private Color attackingColor = Color.red;
 
     void Start()
     {
@@ -49,18 +58,18 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        healthAmount = maxHealth;
-        playerHealthManager = player.GetComponent<HealthManager>();
 
         enemyManager = GameObject.FindGameObjectWithTag("EnemyManager").GetComponent<EnemyManager>();
         enemyManager.addToList(gameObject);
-        
+
+        healthAmount = maxHealth;
+
         SetState(EnemyState.Idle);
     }
 
     void Update()
     {
-        distanceToPlayer = player.position - transform.position;
+        distanceToPlayer = player.position + playerColliderOffset - transform.position;
 
         switch (currentState)
         {
@@ -94,6 +103,7 @@ public class EnemyAI : MonoBehaviour
             case EnemyState.Chasing:
                 if (CanSeePlayer())
                 {
+                    lastKnownPlayerPosition = player.position + playerColliderOffset;
                     if (distanceToPlayer.magnitude <= attackRange)
                     {
                         SetState(EnemyState.Attacking);
@@ -105,12 +115,24 @@ public class EnemyAI : MonoBehaviour
                 }
                 else
                 {
-                    LosePlayer();
+                    SetState(EnemyState.Searching);
+                }
+                break;
+
+            case EnemyState.Searching:
+                if (CanSeePlayer())
+                {
+                    DetectPlayer();
+                }
+                else
+                {
+                    SearchForPlayer();
                 }
                 break;
 
             case EnemyState.Attacking:
-            if (CanSeePlayer()){
+                if (CanSeePlayer())
+                {
                     if (distanceToPlayer.magnitude <= attackRange)
                     {
                         if (Time.time - lastAttackTime >= attackCooldown)
@@ -122,10 +144,12 @@ public class EnemyAI : MonoBehaviour
                     {
                         SetState(EnemyState.Chasing);
                     }
-                }else{
-                    LosePlayer();
                 }
-            break;
+                else
+                {
+                    SetState(EnemyState.Searching);
+                }
+                break;
         }
 
         UpdateVisuals();
@@ -137,7 +161,6 @@ public class EnemyAI : MonoBehaviour
         {
             currentState = newState;
             UpdateColor();
-            Debug.Log($"Enemy state changed to: {currentState}");
         }
     }
 
@@ -154,75 +177,44 @@ public class EnemyAI : MonoBehaviour
             case EnemyState.Chasing:
                 spriteRenderer.color = chasingColor;
                 break;
+            case EnemyState.Searching:
+                spriteRenderer.color = searchingColor;
+                break;
             case EnemyState.Attacking:
                 spriteRenderer.color = attackingColor;
                 break;
         }
     }
 
-    bool CanSeePlayer(){
-    if (distanceToPlayer.magnitude <= detectionRadius)
+    bool CanSeePlayer()
     {
-        RaycastHit2D hit = Physics2D.Linecast(transform.position, player.position, obstacleLayer);
-        if (hit.collider == null)
+        if (distanceToPlayer.magnitude <= detectionRadius)
         {
-            return true;
-        }
-    }
-    return false;
-}
+            RaycastHit2D hit = Physics2D.Linecast(transform.position, player.position + playerColliderOffset, obstacleLayer);
 
+            if (hit.collider == null)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     void DetectPlayer()
     {
-        if (!isPlayerDetected)
-        {
-            isPlayerDetected = true;
+        if(!sawPlayer){
+            sawPlayer = true;
             var exclamationMark = Instantiate(exclamationMarkPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
             exclamationMark.transform.SetParent(transform);
         }
-        SetState(EnemyState.Chasing);
-    }
 
-    void LosePlayer()
-    {
-        isPlayerDetected = false;
-        SetState(EnemyState.Idle);
-        rb.velocity = Vector2.zero;
-        patrolWaitTimer = patrolWaitTime;
+        SetState(EnemyState.Chasing);
     }
 
     void ChasePlayer()
     {
-        Vector2 direction = (player.position - transform.position).normalized;
+        Vector2 direction = (player.position + playerColliderOffset - transform.position).normalized;
         rb.velocity = direction * movementSpeed;
-    }
-
-    void Attack()
-    {
-        lastAttackTime = Time.time;
-        if (enemyType == EnemyType.Melee)
-        {
-            MeleeAttack();
-        }
-        else
-        {
-            RangedAttack();
-        }
-    }
-
-    void MeleeAttack()
-    {
-        Debug.Log("Melee attack!");
-        playerHealthManager.TakeDamage(damage);
-
-        // Implement melee attack logic here
-    }
-
-    void RangedAttack()
-    {
-        Debug.Log("Ranged attack!");
-        playerHealthManager.TakeDamage(damage);
     }
 
     void Patrol()
@@ -253,6 +245,44 @@ public class EnemyAI : MonoBehaviour
         patrolTimer = patrolDuration;
     }
 
+    void SearchForPlayer()
+    {
+        Vector2 direction = (lastKnownPlayerPosition - transform.position).normalized;
+        rb.velocity = direction * movementSpeed;
+
+        if (Vector2.Distance(transform.position, lastKnownPlayerPosition) < 0.1f)
+        {
+            SetState(EnemyState.Patrolling);
+        }
+    }
+
+    void Attack()
+    {
+        lastAttackTime = Time.time;
+        if (enemyType == EnemyType.Melee)
+        {
+            MeleeAttack();
+        }
+        else
+        {
+            RangedAttack();
+        }
+    }
+
+    void MeleeAttack()
+    {
+        Debug.Log("Melee attack!");
+        //playerHealthManager.TakeDamage(damage);
+
+        // Implement melee attack logic here
+    }
+
+    void RangedAttack()
+    {
+        Debug.Log("Ranged attack!");
+        //playerHealthManager.TakeDamage(damage);
+    }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (currentState == EnemyState.Patrolling && ((1 << collision.gameObject.layer) & obstacleLayer) != 0)
@@ -261,39 +291,40 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    public void TakeDamage (float damage)
+    public void TakeDamage(float damage)
     {
         healthAmount -= damage;
 
-        if(healthAmount <= 0){
+        if (healthAmount <= 0)
+        {
             Die();
-            print("kkfkdffd");
         }
 
     }
 
-    public void Heal (float healingAmount)
+    public void Heal(float healingAmount)
     {
         healthAmount += healingAmount;
         healthAmount = Mathf.Clamp(healthAmount, 0, maxHealth);
     }
 
-    void Die(){
-
-        Destroy(gameObject);
+    void Die()
+    {
         enemyManager.removeFromList(gameObject);
+        Destroy(gameObject);
     }
 
-    void UpdateVisuals(){
+    void UpdateVisuals()
+    {
         animator.SetBool("Run", rb.velocity.magnitude != 0);
 
         if (rb.velocity.x > 0)
         {
-            transform.localScale = Vector3.one;
+            spriteRenderer.flipX = false;
         }
         else if (rb.velocity.x < 0)
         {
-            transform.localScale = new Vector3(-1, 1, 1);
+            spriteRenderer.flipX = true;
         }
     }
 
@@ -305,14 +336,13 @@ public class EnemyAI : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
 
-        if (enemyType == EnemyType.Ranged)
-        {
-            Gizmos.color = Color.blue;
-            //Gizmos.DrawWireSphere(transform.position, rangedPreferredDistance);
-        }
-
         Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(transform.position, distanceToPlayer.normalized * detectionRadius);
+        if(distanceToPlayer.magnitude < detectionRadius){
+            Gizmos.DrawRay(transform.position, distanceToPlayer);
+        }else{
+            Gizmos.DrawRay(transform.position, distanceToPlayer.normalized * detectionRadius);
+        }
+        
 
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, patrolRadius);

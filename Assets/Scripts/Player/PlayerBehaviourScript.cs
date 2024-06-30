@@ -38,6 +38,10 @@ public class PlayerBehaviourScript : MonoBehaviour
 
 
         anim.SetBool("Run", movement.magnitude != 0);
+
+        if(Input.GetKeyDown(KeyCode.Space)){
+            Ulta();
+        }
     }
 
     private void RotatePlayerTowardsMouse()
@@ -58,9 +62,21 @@ public class PlayerBehaviourScript : MonoBehaviour
         }
     }
 
-    public bool canAttack()
-    {
-        return body.velocity.magnitude > 0;
+    public void Ulta(){
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 3f);
+
+        foreach (Collider2D collider in colliders)
+        {
+            // Проверяем, есть ли у объекта Rigidbody2D
+            Rigidbody2D rb2d = collider.GetComponent<Rigidbody2D>();
+            if (rb2d != null)
+            {
+                Vector2 direction = rb2d.transform.position - transform.position;
+                direction.Normalize();
+
+                rb2d.AddForce(direction * 100f, ForceMode2D.Impulse);
+            }
+        }
     }
 }
 
