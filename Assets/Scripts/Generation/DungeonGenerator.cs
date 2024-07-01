@@ -3,18 +3,22 @@ using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
 {
-    public GameObject floor;
-    public Sprite[] floorSprites;
-    public GameObject wall;
-    public Sprite[] wallSprites;
+    [Header("Generation Settings")]
     public int roomCount;
     public Vector2Int roomSizeMin;
     public Vector2Int roomSizeMax;
     public int gridWidth;
     public int gridHeight;
+
+    [Header("Objects and Sprites")]
+    public GameObject floor;
+    public Sprite[] floorSprites;
+    public GameObject wall;
+    public Sprite[] wallSprites;
     public GameObject player;
     public GameObject stairsDownPrefab;
 
+    [Header("Data structures")]
     private HashSet<Vector2Int> floorPositions = new HashSet<Vector2Int>();
     private HashSet<Vector2Int> wallPositions = new HashSet<Vector2Int>();
 
@@ -34,7 +38,6 @@ public class DungeonGenerator : MonoBehaviour
         InstantiateTiles(floor, floorPositions);
         InstantiateTiles(wall, wallPositions);
 
-        // Размещение игрока и префабов
         PlacePlayerAndPrefabs(rooms);
     }
 
@@ -95,7 +98,6 @@ public class DungeonGenerator : MonoBehaviour
             Vector2Int pointA = GetRandomPointInRoom(rooms[i - 1]);
             Vector2Int pointB = GetRandomPointInRoom(rooms[i]);
 
-            // Connect only horizontally or vertically between adjacent rooms
             CreateCorridor(pointA, new Vector2Int(pointB.x, pointA.y));
             CreateCorridor(new Vector2Int(pointB.x, pointA.y), pointB);
         }
@@ -183,11 +185,9 @@ public class DungeonGenerator : MonoBehaviour
     {
         if (rooms.Count > 0)
         {
-            // Размещение игрока и выхода в первой комнате
             Vector2Int startRoomCenter = GetRoomCenter(rooms[0]);
             player.transform.position = new Vector3(startRoomCenter.x, startRoomCenter.y, 0);
 
-            // Найти самую далекую комнату от стартовой
             RectInt furthestRoom = GetFurthestRoom(startRoomCenter, rooms);
             Vector2Int furthestRoomCenter = GetRoomCenter(furthestRoom);
             Instantiate(stairsDownPrefab, new Vector3(furthestRoomCenter.x, furthestRoomCenter.y, 0), Quaternion.identity);

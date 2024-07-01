@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2495200958419160326}
   - component: {fileID: 1328334663660560439}
   - component: {fileID: 2140586018073132265}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Spider
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -101,14 +101,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
-  maxHealth: 70
-  healthAmount: 70
+  maxHP: 0
+  currentHP: 0
   damage: 5
   attackRange: 1
   attackCooldown: 1
   movementSpeed: 3.5
   detectionRadius: 8
-  exclamationMarkPrefab: {fileID: 4612148735362323830, guid: b5c975f7a5990d94383c3c8f892d4c2f, type: 3}
+  gun: {fileID: 0}
   patrolSpeed: 3
   patrolDuration: 2
   patrolWaitTime: 1
@@ -116,11 +116,13 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 128
+  maxSearchingTime: 0
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   patrolColor: {r: 0, g: 1, b: 0, a: 1}
   chasingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   attackingColor: {r: 1, g: 0, b: 0, a: 1}
   searchingColor: {r: 0, g: 0, b: 1, a: 1}
+  markPrefab: {fileID: 4612148735362323830, guid: b5c975f7a5990d94383c3c8f892d4c2f, type: 3}
 --- !u!50 &2495200958419160326
 Rigidbody2D:
   serializedVersion: 4
@@ -180,7 +182,7 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.19502234}
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.24247766
 --- !u!95 &2140586018073132265

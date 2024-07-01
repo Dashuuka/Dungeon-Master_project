@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 2545023222989070239}
   - component: {fileID: 5911026951179100899}
   - component: {fileID: 2079652834681099231}
+  - component: {fileID: 7571382434290557257}
   m_Layer: 0
-  m_Name: Exclamation mark
+  m_Name: Mark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 50
-  m_Sprite: {fileID: 878763981, guid: bba82d03995945c48b042072a006f641, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -82,7 +83,7 @@ SpriteRenderer:
   m_Size: {x: 0.3125, y: 0.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2079652834681099231
@@ -106,3 +107,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7571382434290557257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4612148735362323830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6986b6521c2fa6f45886c4f7bde0770b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  markSprites:
+  - {fileID: 878763981, guid: bba82d03995945c48b042072a006f641, type: 3}
+  - {fileID: -1391266831, guid: bba82d03995945c48b042072a006f641, type: 3}
+  - {fileID: 876671206, guid: bba82d03995945c48b042072a006f641, type: 3}

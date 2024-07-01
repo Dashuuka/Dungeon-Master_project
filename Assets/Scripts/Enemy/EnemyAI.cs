@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -5,37 +7,36 @@ public class EnemyAI : MonoBehaviour
     public enum EnemyType { Melee, Ranged }
     public enum EnemyState { Idle, Patrolling, Chasing, Searching, Attacking }
 
-    [Header("Characteristics")]
+    [Header("Enemy Settings")]
     public EnemyType enemyType;
     [Space]
-    public float maxHealth;
-    public float healthAmount;
+    public float maxHP;
+    public float currentHP;
     [Space]
     public float damage;
     public float attackRange;
     public float attackCooldown;
-    private float lastAttackTime;
     [Space]
     public float movementSpeed;
     [Space]
     public float detectionRadius;
 
+    [Header("Ranged")]
+    public GunBehaviour gun;
+
     [Header("Patrol")]
-    public GameObject exclamationMarkPrefab;
-    [Space]
     public float patrolSpeed;
     public float patrolDuration;
+    private float patrolTimer;
     public float patrolWaitTime;
+    private float patrolWaitTimer;
     public float patrolRadius;
     [Space]
     public LayerMask obstacleLayer;
-    private Vector2 patrolDirection;
-    private float patrolTimer;
-    private float patrolWaitTimer;
-    private Vector2 distanceToPlayer;
-    private Vector3 playerColliderOffset = new Vector3(0, -0.3f, 0);
-    private Vector3 lastKnownPlayerPosition;
-    private bool sawPlayer = false;
+
+    [Header("Searching")]
+    public float maxSearchingTime;
+    private float searchingTimer;
 
     [Header("States")]
     public Color idleColor = Color.white;
@@ -45,12 +46,23 @@ public class EnemyAI : MonoBehaviour
     public Color searchingColor = Color.blue;
     private EnemyState currentState = EnemyState.Idle;
 
+    [Header("Marks")]
+    public GameObject markPrefab;
+
     [Header("Components")]
     private Transform player;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
     private Animator animator;
     private EnemyManager enemyManager;
+
+    [Header("Private variables")]
+    private Vector2 patrolDirection;
+    private Vector2 distanceToPlayer;
+    private Vector3 playerColliderOffset = new Vector3(0, -0.3f, 0);
+    private Vector3 lastKnownPlayerPosition;
+    private bool sawPlayer = false;
+    private float lastAttackTime;
 
     void Start()
     {
@@ -62,7 +74,7 @@ public class EnemyAI : MonoBehaviour
         enemyManager = GameObject.FindGameObjectWithTag("EnemyManager").GetComponent<EnemyManager>();
         enemyManager.addToList(gameObject);
 
-        healthAmount = maxHealth;
+        currentHP = maxHP;
 
         SetState(EnemyState.Idle);
     }
@@ -116,6 +128,7 @@ public class EnemyAI : MonoBehaviour
                 else
                 {
                     SetState(EnemyState.Searching);
+                    searchingTimer = maxSearchingTime;
                 }
                 break;
 
@@ -204,17 +217,26 @@ public class EnemyAI : MonoBehaviour
     {
         if(!sawPlayer){
             sawPlayer = true;
-            var exclamationMark = Instantiate(exclamationMarkPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
-            exclamationMark.transform.SetParent(transform);
+            CreateMark(0);
         }
 
         SetState(EnemyState.Chasing);
+    }
+
+    void CreateMark(int id){
+        var mark = Instantiate(markPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+        mark.transform.SetParent(transform);
+        mark.GetComponent<MarkScript>().SetMark(id);
     }
 
     void ChasePlayer()
     {
         Vector2 direction = (player.position + playerColliderOffset - transform.position).normalized;
         rb.velocity = direction * movementSpeed;
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        gun.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
     }
 
     void Patrol()
@@ -234,7 +256,7 @@ public class EnemyAI : MonoBehaviour
 
     void SetNewPatrolDirection()
     {
-        patrolDirection = Random.insideUnitCircle.normalized;
+        patrolDirection = UnityEngine.Random.insideUnitCircle.normalized;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, patrolDirection, patrolRadius, obstacleLayer);
         
         if (hit.collider != null)
@@ -247,12 +269,17 @@ public class EnemyAI : MonoBehaviour
 
     void SearchForPlayer()
     {
+
+        searchingTimer -= Time.deltaTime;
+
         Vector2 direction = (lastKnownPlayerPosition - transform.position).normalized;
         rb.velocity = direction * movementSpeed;
 
-        if (Vector2.Distance(transform.position, lastKnownPlayerPosition) < 0.1f)
+        if (Vector2.Distance(transform.position, lastKnownPlayerPosition) < 0.1f || searchingTimer <= 0f)
         {
+            sawPlayer = false;
             SetState(EnemyState.Patrolling);
+            CreateMark(1);
         }
     }
 
@@ -280,7 +307,7 @@ public class EnemyAI : MonoBehaviour
     void RangedAttack()
     {
         Debug.Log("Ranged attack!");
-        //playerHealthManager.TakeDamage(damage);
+        gun.Shoot(false);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -291,21 +318,21 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float amount)
     {
-        healthAmount -= damage;
+        currentHP -= amount;
 
-        if (healthAmount <= 0)
+        if (currentHP <= 0)
         {
             Die();
         }
 
     }
 
-    public void Heal(float healingAmount)
+    public void Heal(float amount)
     {
-        healthAmount += healingAmount;
-        healthAmount = Mathf.Clamp(healthAmount, 0, maxHealth);
+        currentHP += amount;
+        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
     }
 
     void Die()

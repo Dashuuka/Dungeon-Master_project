@@ -2,63 +2,63 @@ using UnityEngine;
 
 public class GunBehaviour : MonoBehaviour
 {
-    public GameObject bulletPrefab;
-    public Transform firePoint;
+    [Header("Projectile settings")]
+    public GameObject projectilePrefab;
+    public Sprite projectileSprite;
+    [Header("Weapon settings")]
+    public Vector3 projectileOffset;
     public float projectileSpeed;
-    public Animator anim;
-    public float fireRate = 1f;
+    public float fireRate;
     private float nextFireTime;
 
-    public void Shoot()
-    {
+    [Header("Spread settings")]
+    public bool useSpread;
+    public float spreadAngle;
+    public float spreadChance;
 
+    [Header("Bullet settings")]
+    public int bulletCount;
+    public float bulletSpreadAngle;
+
+    [Header("Other settings")]
+    public float damage;
+    public float reloadTime;
+    public bool isAutomatic;
+    public bool hasBurstMode;
+    public int burstCount;
+    public float burstDelay;
+
+    private void Start()
+    {
+        nextFireTime = 0f;
+    }
+
+    public void Shoot(bool isPlayerShoot)
+    {
         if (Time.time > nextFireTime)
         {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = transform.position.z;
-
-            Vector3 direction = mousePosition - transform.parent.position;
-
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-
-            firePoint.rotation = Quaternion.Euler(new Vector3(0, 0, angle + 270f));
-            
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-
-            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            for (int i = 0; i < bulletCount; i++)
             {
-                rb.velocity = direction.normalized * projectileSpeed;
+                float angle = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+
+                if (useSpread && Random.value <= spreadChance)
+                {
+                    angle += Random.Range(-spreadAngle * Mathf.Deg2Rad, spreadAngle * Mathf.Deg2Rad);
+                }
+
+                angle += i * bulletSpreadAngle * Mathf.Deg2Rad;
+
+                GameObject projectile = Instantiate(projectilePrefab, transform.position + projectileOffset, Quaternion.Euler(0f, 0f, angle * Mathf.Rad2Deg));
+                projectile.GetComponent<SpriteRenderer>().sprite = projectileSprite;
+                projectile.GetComponent<Projectile>().isPlayerProjectile = isPlayerShoot;
+                Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    rb.velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * projectileSpeed;
+                }
             }
 
             nextFireTime = Time.time + 1f / fireRate;
-        }
-    }
-
-    private void RotateGunTowardsMouse()
-    {
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = transform.position.z;
-
-        Vector3 direction = mousePosition - transform.parent.position;
-
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        if (direction.x < 0f)
-        {
-            angle += 180f;
-        }
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
-    }
-
-
-    void Update()
-    {
-        RotateGunTowardsMouse();
-        if (Input.GetMouseButtonDown(0))
-        {
-            Shoot();
         }
     }
 }
