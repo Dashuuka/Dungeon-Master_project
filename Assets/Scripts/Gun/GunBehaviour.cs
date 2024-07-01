@@ -6,6 +6,7 @@ public class GunBehaviour : MonoBehaviour
     public GameObject projectilePrefab;
     public Sprite projectileSprite;
     [Header("Weapon settings")]
+    public bool isPlayerProjectile;
     public Vector3 projectileOffset;
     public float projectileSpeed;
     public float fireRate;
@@ -17,16 +18,9 @@ public class GunBehaviour : MonoBehaviour
     public float spreadChance;
 
     [Header("Bullet settings")]
+    public float damage;
     public int bulletCount;
     public float bulletSpreadAngle;
-
-    [Header("Other settings")]
-    public float damage;
-    public float reloadTime;
-    public bool isAutomatic;
-    public bool hasBurstMode;
-    public int burstCount;
-    public float burstDelay;
 
     private void Start()
     {
@@ -50,7 +44,7 @@ public class GunBehaviour : MonoBehaviour
 
                 GameObject projectile = Instantiate(projectilePrefab, transform.position + projectileOffset, Quaternion.Euler(0f, 0f, angle * Mathf.Rad2Deg));
                 projectile.GetComponent<SpriteRenderer>().sprite = projectileSprite;
-                projectile.GetComponent<Projectile>().isPlayerProjectile = isPlayerShoot;
+                projectile.GetComponent<Projectile>().Initialize(isPlayerProjectile, damage);
                 Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
                 if (rb != null)
                 {

@@ -129,6 +129,9 @@ public class EnemyAI : MonoBehaviour
                 {
                     SetState(EnemyState.Searching);
                     searchingTimer = maxSearchingTime;
+                    if(enemyType == EnemyType.Ranged){
+                        gun.transform.rotation = Quaternion.Euler(Vector3.zero);
+                    }
                 }
                 break;
 
@@ -146,6 +149,10 @@ public class EnemyAI : MonoBehaviour
             case EnemyState.Attacking:
                 if (CanSeePlayer())
                 {
+                    if(enemyType == EnemyType.Ranged){
+                        float angle = Mathf.Atan2(distanceToPlayer.y, distanceToPlayer.x) * Mathf.Rad2Deg;
+                        gun.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+                    }
                     if (distanceToPlayer.magnitude <= attackRange)
                     {
                         if (Time.time - lastAttackTime >= attackCooldown)
@@ -234,9 +241,10 @@ public class EnemyAI : MonoBehaviour
         Vector2 direction = (player.position + playerColliderOffset - transform.position).normalized;
         rb.velocity = direction * movementSpeed;
 
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        gun.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+        if(enemyType == EnemyType.Ranged){
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            gun.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+        }
     }
 
     void Patrol()
