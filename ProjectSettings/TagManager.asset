@@ -8,6 +8,7 @@ TagManager:
   - EnemyManager
   - Projectile
   - Wall
+  - Destroyable
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Enemy
   - EnemyProjectile
   - PlayerProjectile
-  - 
+  - MiniMapMark
   - 
   - 
   - 

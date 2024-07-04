@@ -3,6 +3,19 @@ using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
 {
+    [System.Serializable]
+    public class Floor
+    {
+        public int minEnemies;
+        public int maxEnemies;
+        public List<GameObject> enemyPrefabs;
+        public Color floorColor;
+        public Color wallColor;
+        public List<GameObject> randomDecorations;
+        public List<GameObject> regularDecorations;
+        public Color decorationColor;
+    }
+
     [Header("Generation Settings")]
     public int roomCount;
     public Vector2Int roomSizeMin;
@@ -18,13 +31,27 @@ public class DungeonGenerator : MonoBehaviour
     public GameObject player;
     public GameObject stairsDownPrefab;
 
+    [Header("Floors")]
+    public List<Floor> floors;
+
     [Header("Data structures")]
     private HashSet<Vector2Int> floorPositions = new HashSet<Vector2Int>();
     private HashSet<Vector2Int> wallPositions = new HashSet<Vector2Int>();
+    private HashSet<Vector2Int> decorationPositions = new HashSet<Vector2Int>();
+
+    private int currentFloorIndex = 0;
 
     void Awake()
     {
         GenerateDungeon();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            NextFloor();
+        }
     }
 
     void GenerateDungeon()
@@ -35,10 +62,12 @@ public class DungeonGenerator : MonoBehaviour
 
         CreateWalls();
 
-        InstantiateTiles(floor, floorPositions);
-        InstantiateTiles(wall, wallPositions);
+        Floor currentFloor = floors[currentFloorIndex];
+        InstantiateTiles(floor, floorPositions, currentFloor.floorColor);
+        InstantiateTiles(wall, wallPositions, currentFloor.wallColor);
 
         PlacePlayerAndPrefabs(rooms);
+        PlaceDecorations(rooms);
     }
 
     List<RectInt> GenerateRooms()
@@ -163,20 +192,21 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    void InstantiateTiles(GameObject prefab, HashSet<Vector2Int> positions)
+    void InstantiateTiles(GameObject prefab, HashSet<Vector2Int> positions, Color color)
     {
         foreach (Vector2Int pos in positions)
         {
             var tile = Instantiate(prefab, new Vector3(pos.x, pos.y, 0), Quaternion.identity);
-            tile.GetComponent<SpriteRenderer>().sprite = floorSprites[Random.Range(0, floorSprites.Length)];
+            var spriteRenderer = tile.GetComponent<SpriteRenderer>();
+            spriteRenderer.color = color;
 
             if (prefab == floor)
             {
-                tile.GetComponent<SpriteRenderer>().sprite = floorSprites[Random.Range(0, floorSprites.Length)];
+                spriteRenderer.sprite = floorSprites[Random.Range(0, floorSprites.Length)];
             }
             else if (prefab == wall)
             {
-                tile.GetComponent<SpriteRenderer>().sprite = wallSprites[Random.Range(0, wallSprites.Length)];
+                spriteRenderer.sprite = wallSprites[Random.Range(0, wallSprites.Length)];
             }
         }
     }
@@ -188,9 +218,55 @@ public class DungeonGenerator : MonoBehaviour
             Vector2Int startRoomCenter = GetRoomCenter(rooms[0]);
             player.transform.position = new Vector3(startRoomCenter.x, startRoomCenter.y, 0);
 
+            Floor currentFloor = floors[currentFloorIndex];
+            for (int i = 1; i < rooms.Count; i++)
+            {
+                Vector2Int roomCenter = GetRoomCenter(rooms[i]);
+                int enemyCount = Random.Range(currentFloor.minEnemies, currentFloor.maxEnemies + 1);
+                for (int j = 0; j < enemyCount; j++)
+                {
+                    Vector2Int spawnPos = GetRandomPointInRoom(rooms[i]);
+                    GameObject mobPrefab = currentFloor.enemyPrefabs[Random.Range(0, currentFloor.enemyPrefabs.Count)];
+                    Instantiate(mobPrefab, new Vector3(spawnPos.x, spawnPos.y, 0), Quaternion.identity);
+                }
+            }
+
             RectInt furthestRoom = GetFurthestRoom(startRoomCenter, rooms);
             Vector2Int furthestRoomCenter = GetRoomCenter(furthestRoom);
             Instantiate(stairsDownPrefab, new Vector3(furthestRoomCenter.x, furthestRoomCenter.y, 0), Quaternion.identity);
+        }
+    }
+
+    void PlaceDecorations(List<RectInt> rooms)
+    {
+        Floor currentFloor = floors[currentFloorIndex];
+        foreach (RectInt room in rooms)
+        {
+            int randomDecorationCount = Random.Range(2, 8);
+            for (int i = 0; i < randomDecorationCount; i++)
+            {
+                Vector2Int randomPos = GetRandomPointInRoom(room);
+                if (!decorationPositions.Contains(randomPos))
+                {
+                    GameObject randomDecoration = currentFloor.randomDecorations[Random.Range(0, currentFloor.randomDecorations.Count)];
+                    var decorationInstance = Instantiate(randomDecoration, new Vector3(randomPos.x, randomPos.y, 0), Quaternion.Euler(0, 0, Random.Range(0, 360)));
+                    decorationInstance.GetComponent<SpriteRenderer>().color = currentFloor.decorationColor;
+                    decorationPositions.Add(randomPos);
+                }
+            }
+
+            int regularDecorationCount = Random.Range(3, 7);
+            for (int i = 0; i < regularDecorationCount; i++)
+            {
+                Vector2Int regularPos = GetRandomPointInRoom(room);
+                if (!decorationPositions.Contains(regularPos))
+                {
+                    GameObject regularDecoration = currentFloor.regularDecorations[Random.Range(0, currentFloor.regularDecorations.Count)];
+                    var decorationInstance = Instantiate(regularDecoration, new Vector3(regularPos.x, regularPos.y, 0), Quaternion.identity);
+                    decorationInstance.GetComponent<SpriteRenderer>().color = currentFloor.decorationColor;
+                    decorationPositions.Add(regularPos);
+                }
+            }
         }
     }
 
@@ -219,5 +295,21 @@ public class DungeonGenerator : MonoBehaviour
         }
 
         return furthestRoom;
+    }
+
+    public void NextFloor()
+    {
+        currentFloorIndex++;
+        if (currentFloorIndex < floors.Count)
+        {
+            floorPositions.Clear();
+            wallPositions.Clear();
+            decorationPositions.Clear();
+            GenerateDungeon();
+        }
+        else
+        {
+            Debug.Log("No more floors available.");
+        }
     }
 }

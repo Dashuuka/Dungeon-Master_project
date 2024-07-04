@@ -56,6 +56,11 @@ public class EnemyAI : MonoBehaviour
     private Animator animator;
     private EnemyManager enemyManager;
 
+    [Header("Audio")]
+    public AudioClip takeDamageSound;
+    public AudioClip detectPlayerSound;
+    private AudioSource audioSource;
+
     [Header("Private variables")]
     private Vector2 patrolDirection;
     private Vector2 distanceToPlayer;
@@ -70,11 +75,16 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
 
         enemyManager = GameObject.FindGameObjectWithTag("EnemyManager").GetComponent<EnemyManager>();
-        enemyManager.addToList(gameObject);
+        enemyManager.AddToList(gameObject);
 
         currentHP = maxHP;
+
+        if(enemyType == EnemyType.Ranged){
+            attackCooldown = 1/gun.fireRate;
+        }
 
         SetState(EnemyState.Idle);
     }
@@ -129,9 +139,6 @@ public class EnemyAI : MonoBehaviour
                 {
                     SetState(EnemyState.Searching);
                     searchingTimer = maxSearchingTime;
-                    if(enemyType == EnemyType.Ranged){
-                        gun.transform.rotation = Quaternion.Euler(Vector3.zero);
-                    }
                 }
                 break;
 
@@ -225,6 +232,7 @@ public class EnemyAI : MonoBehaviour
         if(!sawPlayer){
             sawPlayer = true;
             CreateMark(0);
+            PlaySound(detectPlayerSound);
         }
 
         SetState(EnemyState.Chasing);
@@ -254,6 +262,9 @@ public class EnemyAI : MonoBehaviour
         {
             SetState(EnemyState.Idle);
             rb.velocity = Vector2.zero;
+             if(enemyType == EnemyType.Ranged){
+                gun.transform.rotation = Quaternion.Euler(Vector3.zero);
+            }
             patrolWaitTimer = patrolWaitTime;
         }
         else
@@ -306,16 +317,12 @@ public class EnemyAI : MonoBehaviour
 
     void MeleeAttack()
     {
-        Debug.Log("Melee attack!");
-        //playerHealthManager.TakeDamage(damage);
-
-        // Implement melee attack logic here
+        player.GetComponent<PlayerBehaviourScript>().TakeDamage(damage);
     }
 
     void RangedAttack()
     {
-        Debug.Log("Ranged attack!");
-        gun.Shoot(false);
+        gun.Shoot(false, 0);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -329,12 +336,12 @@ public class EnemyAI : MonoBehaviour
     public void TakeDamage(float amount)
     {
         currentHP -= amount;
+        PlaySound(takeDamageSound);
 
         if (currentHP <= 0)
         {
             Die();
         }
-
     }
 
     public void Heal(float amount)
@@ -345,7 +352,7 @@ public class EnemyAI : MonoBehaviour
 
     void Die()
     {
-        enemyManager.removeFromList(gameObject);
+        enemyManager.RemoveFromList(gameObject);
         Destroy(gameObject);
     }
 
@@ -360,6 +367,14 @@ public class EnemyAI : MonoBehaviour
         else if (rb.velocity.x < 0)
         {
             spriteRenderer.flipX = true;
+        }
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 

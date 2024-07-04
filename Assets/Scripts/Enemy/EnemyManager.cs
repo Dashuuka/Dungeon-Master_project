@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    List<GameObject> enemiesList = new List<GameObject>();
+    public List<GameObject> enemiesList = new List<GameObject>();
+    public GameObject keyPrefab;
 
-    public void addToList(GameObject enemy){
+    public void AddToList(GameObject enemy)
+    {
         enemiesList.Add(enemy);
     }
 
-    public void removeFromList(GameObject enemy){
+    public void RemoveFromList(GameObject enemy)
+    {
         enemiesList.Remove(enemy);
-    }
-
-    public bool checkEnemies(){
-        return enemiesList.Count == 0;
+        
+        if(enemiesList.Count == 0){
+            Instantiate(keyPrefab, enemy.transform.position, Quaternion.identity);
+        }
     }
 }

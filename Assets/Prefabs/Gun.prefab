@@ -53,7 +53,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -97,8 +97,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec20f5b74c3e3104489b67ce08ac4d93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 8505870314090014371, guid: ab3b6887512fb004aaa61e571d3dca19, type: 3}
-  firePoint: {fileID: 8307850551031748714}
+  projectilePrefab: {fileID: 0}
+  projectileSprite: {fileID: 0}
+  isPlayerProjectile: 0
+  projectileOffset: {x: 0, y: 0, z: 0}
   projectileSpeed: 15
-  anim: {fileID: 0}
   fireRate: 5
+  useSpread: 0
+  spreadAngle: 0
+  spreadChance: 0
+  damage: 0
+  bulletCount: 0
+  bulletSpreadAngle: 0
