@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class DungeonGenerator : MonoBehaviour
         public int maxRandomDecorations;
         public int minRegularDecorations;
         public int maxRegularDecorations;
-        public AudioClip backgroundMusic;  // Добавьте поле для музыки
+        public AudioClip backgroundMusic;
     }
 
     [Header("Generation Settings")]
@@ -34,6 +35,8 @@ public class DungeonGenerator : MonoBehaviour
     public Sprite[] wallSprites;
     public GameObject player;
     public GameObject stairsDownPrefab;
+    public GameObject bossPrefab;
+
 
     [Header("Floors")]
     public List<Floor> floors;
@@ -47,6 +50,13 @@ public class DungeonGenerator : MonoBehaviour
     private List<GameObject> instantiatedObjects = new List<GameObject>();
     private AudioSource audioSource;
 
+    [Header("Boss")]
+    public EnemyAI boss;
+    public bool isBossAlive;
+    public Image bossbar;
+    public Image bossbarBorder;
+    public GameObject bossText;
+
     void Awake()
     {
         audioSource = gameObject.AddComponent<AudioSource>();
@@ -55,14 +65,18 @@ public class DungeonGenerator : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        if (currentFloorIndex == floors.Count - 1 && isBossAlive)
         {
-            NextFloor();
+            bossbar.gameObject.SetActive(true);
+            bossbarBorder.gameObject.SetActive(true);
+            bossText.SetActive(true);
+            bossbar.fillAmount = boss.currentHP / boss.maxHP;
         }
     }
 
     void GenerateDungeon()
     {
+        ClearObjectsWithTags("Destroyable", "Chest", "Coin", "HealthPotion", "ManaPotion", "Weapon", "Enemy", "Stairs");
         List<RectInt> rooms = GenerateRooms();
 
         ConnectRooms(rooms);
@@ -77,6 +91,18 @@ public class DungeonGenerator : MonoBehaviour
         PlaceDecorations(rooms);
 
         PlayFloorMusic(currentFloor.backgroundMusic);
+    }
+
+    void ClearObjectsWithTags(params string[] tags)
+    {
+        foreach (string tag in tags)
+        {
+            GameObject[] objectsToClear = GameObject.FindGameObjectsWithTag(tag);
+            foreach (GameObject obj in objectsToClear)
+            {
+                Destroy(obj);
+            }
+        }
     }
 
     List<RectInt> GenerateRooms()
@@ -244,10 +270,22 @@ public class DungeonGenerator : MonoBehaviour
 
             RectInt furthestRoom = GetFurthestRoom(startRoomCenter, rooms);
             Vector2Int furthestRoomCenter = GetRoomCenter(furthestRoom);
-            var stairsInstance = Instantiate(stairsDownPrefab, new Vector3(furthestRoomCenter.x, furthestRoomCenter.y, 0), Quaternion.identity);
-            instantiatedObjects.Add(stairsInstance);
+            
+            if (currentFloorIndex == floors.Count - 1)
+            {
+                var bossInstance = Instantiate(bossPrefab, new Vector3(furthestRoomCenter.x, furthestRoomCenter.y, 0), Quaternion.identity);
+                instantiatedObjects.Add(bossInstance);
+                boss = bossInstance.GetComponent<EnemyAI>();
+                isBossAlive = true;
+            }
+            else
+            {
+                var stairsInstance = Instantiate(stairsDownPrefab, new Vector3(furthestRoomCenter.x, furthestRoomCenter.y, 0), Quaternion.identity);
+                instantiatedObjects.Add(stairsInstance);
+            }
         }
     }
+
 
     void PlaceDecorations(List<RectInt> rooms)
     {

@@ -123,14 +123,20 @@ public class PlayerBehaviourScript : MonoBehaviour
             }
 
             if (collider.CompareTag("HealthPotion") && Input.GetKeyDown(KeyCode.E)){
-                Heal(200f);
+                Heal(maxHP);
                 Destroy(collider.gameObject);
                 break;
             }
 
             if (collider.CompareTag("ManaPotion") && Input.GetKeyDown(KeyCode.E)){
-                RestoreMana(200f);
+                RestoreMana(maxMana);
                 Destroy(collider.gameObject);
+                break;
+            }
+
+            if (collider.CompareTag("Chest") && Input.GetKeyDown(KeyCode.E) && coins >= collider.GetComponent<ChestScript>().cost){
+                collider.GetComponent<ChestScript>().DestroyObject();
+                coins -= collider.GetComponent<ChestScript>().cost;
                 break;
             }
 
@@ -243,7 +249,7 @@ public class PlayerBehaviourScript : MonoBehaviour
 
     public void Die()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(4);
     }
 
     public void Heal(float amount)
@@ -323,6 +329,8 @@ public class PlayerBehaviourScript : MonoBehaviour
         }else if(col.CompareTag("Stairs") && hasKey){
             hasKey = false;
             dungeonGenerator.NextFloor();
+        }else if(col.CompareTag("Princess")){
+            SceneManager.LoadScene(3);
         }
     }
 

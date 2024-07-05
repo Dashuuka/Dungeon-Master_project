@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 1
-  maxHP: 70
+  maxHP: 50
   currentHP: 0
   damage: 10
   attackRange: 3
@@ -212,6 +212,12 @@ MonoBehaviour:
   markPrefab: {fileID: 4612148735362323830, guid: b5c975f7a5990d94383c3c8f892d4c2f, type: 3}
   takeDamageSound: {fileID: 8300000, guid: 14ec6fb41d3822542b0a814dc11e62a7, type: 3}
   detectPlayerSound: {fileID: 8300000, guid: 9d9c3983cdbae864e84ee2b39734c4c5, type: 3}
+  lootTable:
+  - itemPrefab: {fileID: 2785540492773122852, guid: 58aca40271cdb3e499a1aedf2b9b2226, type: 3}
+    dropChance: 80
+    minAmount: 0
+    maxAmount: 6
+  lootSpreadRadius: 0.5
 --- !u!50 &6225104269608945059
 Rigidbody2D:
   serializedVersion: 4
@@ -402,7 +408,6 @@ GameObject:
   - component: {fileID: 8922975210051118072}
   - component: {fileID: 6708877614092832858}
   - component: {fileID: 7948580370003706035}
-  - component: {fileID: 4892315052391967784}
   - component: {fileID: 291426554462492001}
   m_Layer: 0
   m_Name: Gun
@@ -494,13 +499,13 @@ MonoBehaviour:
   projectileSprite: {fileID: 147158912, guid: bba82d03995945c48b042072a006f641, type: 3}
   isPlayerProjectile: 0
   projectileSpeed: 15
-  fireRate: 10
+  fireRate: 2
   manaCost: 0
   spriteRenderer: {fileID: 0}
   useSpread: 1
   spreadAngle: 10
   spreadChance: 50
-  damage: 1
+  damage: 5
   bulletCount: 1
   bulletSpreadAngle: 20
   magazineSize: 20
@@ -511,51 +516,6 @@ MonoBehaviour:
   shootAnimationDuration: 0.1
   shootSound: {fileID: 8300000, guid: 68a0b1baa203a38428044dbb070fb543, type: 3}
   reloadSound: {fileID: 8300000, guid: 07758183a54b37044827f7fef0d6f91d, type: 3}
---- !u!61 &4892315052391967784
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7691285682702621493}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.4375, y: 1.625}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 2.61}
-  m_EdgeRadius: 0
 --- !u!82 &291426554462492001
 AudioSource:
   m_ObjectHideFlags: 0

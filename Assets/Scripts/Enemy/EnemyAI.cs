@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -61,6 +60,18 @@ public class EnemyAI : MonoBehaviour
     public AudioClip detectPlayerSound;
     private AudioSource audioSource;
 
+    [System.Serializable]
+    public class Loot
+    {
+        public GameObject itemPrefab;
+        public float dropChance;
+        public int minAmount;
+        public int maxAmount;
+    }
+
+    public List<Loot> lootTable;
+    public float lootSpreadRadius = 0.5f;
+
     [Header("Private variables")]
     private Vector2 patrolDirection;
     private Vector2 distanceToPlayer;
@@ -87,6 +98,26 @@ public class EnemyAI : MonoBehaviour
         }
 
         SetState(EnemyState.Idle);
+    }
+
+    private void DropLoot()
+    {
+        foreach (var loot in lootTable)
+        {
+            if (Random.value * 100f <= loot.dropChance)
+            {
+                int amountToDrop = Random.Range(loot.minAmount, loot.maxAmount);
+                for (int i = 0; i < amountToDrop; i++)
+                {
+                    Vector3 randomOffset = new Vector3(
+                        Random.Range(-lootSpreadRadius, lootSpreadRadius),
+                        Random.Range(-lootSpreadRadius, lootSpreadRadius),
+                        0
+                    );
+                    Instantiate(loot.itemPrefab, transform.position + randomOffset, Quaternion.identity);
+                }
+            }
+        }
     }
 
     void Update()
@@ -187,7 +218,7 @@ public class EnemyAI : MonoBehaviour
         if (currentState != newState)
         {
             currentState = newState;
-            UpdateColor();
+            //UpdateColor();
         }
     }
 
@@ -353,6 +384,7 @@ public class EnemyAI : MonoBehaviour
     void Die()
     {
         enemyManager.RemoveFromList(gameObject);
+        DropLoot();
         Destroy(gameObject);
     }
 

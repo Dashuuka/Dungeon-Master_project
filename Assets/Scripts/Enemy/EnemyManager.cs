@@ -6,6 +6,7 @@ public class EnemyManager : MonoBehaviour
 {
     public List<GameObject> enemiesList = new List<GameObject>();
     public GameObject keyPrefab;
+    public int floor = 0;
 
     public void AddToList(GameObject enemy)
     {
@@ -16,8 +17,9 @@ public class EnemyManager : MonoBehaviour
     {
         enemiesList.Remove(enemy);
         
-        if(enemiesList.Count == 0){
+        if(enemiesList.Count == 0 && floor <= 2){
             Instantiate(keyPrefab, enemy.transform.position, Quaternion.identity);
+            floor++;
         }
     }
 }

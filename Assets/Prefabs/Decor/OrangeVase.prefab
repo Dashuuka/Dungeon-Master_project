@@ -145,3 +145,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effect: {fileID: 196022226016511298, guid: 792ded45738c52a4d88d39f4092e185d, type: 3}
   effectColor: {r: 0.81568635, g: 0.37254903, b: 0.15294118, a: 1}
+  audioGhost: {fileID: 3046011056864409547, guid: f856bfe90a7ea0f4fb0d28a5cd43dead, type: 3}
+  destroySound: {fileID: 8300000, guid: 0d0a49c4245e40c49ab2dd224f862fe4, type: 3}
+  lootTable:
+  - itemPrefab: {fileID: 2785540492773122852, guid: 58aca40271cdb3e499a1aedf2b9b2226, type: 3}
+    dropChance: 100
+    minAmount: 1
+    maxAmount: 20
+  - itemPrefab: {fileID: 7439333925925903407, guid: 4934ac6eef9582042b61b431c479e44e, type: 3}
+    dropChance: 10
+    minAmount: 0
+    maxAmount: 1
+  lootSpreadRadius: 1

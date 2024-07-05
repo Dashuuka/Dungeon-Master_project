@@ -68,6 +68,17 @@ public class GunBehaviour : MonoBehaviour
                 return;
             }
         }
+
+        float angle = transform.rotation.eulerAngles.z;
+
+        if (angle > 90 && angle < 270)
+        {
+            spriteRenderer.flipY = true;
+        }
+        else
+        {
+            spriteRenderer.flipY = false;
+        }
     }
 
     public int GetCurrentAmmo()
