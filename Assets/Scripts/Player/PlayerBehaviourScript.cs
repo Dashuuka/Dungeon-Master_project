@@ -20,6 +20,8 @@ public class PlayerBehaviourScript : MonoBehaviour
     public float speed;
     [Space]
     public float ultaCost;
+    [Space]
+    public int coins;
 
     [Header("Components")]
     public GunBehaviour gun;
@@ -29,23 +31,27 @@ public class PlayerBehaviourScript : MonoBehaviour
     public TMP_Text manaText;
     public Image ammoIndicator;
     public TMP_Text ammoText;
+    public TMP_Text coinsText;
     public GameObject UltaEffect;
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
     private CinemachineImpulseSource shake;
     private AudioSource audioSource;
+    public DungeonGenerator dungeonGenerator;
 
     [Header("Audio Clips")]
     public AudioClip takeDamageClip;
     public AudioClip healClip;
     public AudioClip ultaClip;
+    public AudioClip pickupClip;
 
     [Header("Private variables")]
     private Vector2 movement;
     private bool isFlashing;
     private bool canTakeDamage = true;
     private bool startedReloadAnimation;
+    private bool hasKey;
 
     private void Awake()
     {
@@ -99,6 +105,42 @@ public class PlayerBehaviourScript : MonoBehaviour
         }
 
         UpdateAmmoIndicator();
+
+        InterractWithNearby();
+
+        coinsText.text = coins.ToString();
+    }
+
+    private void InterractWithNearby(){
+        Collider2D[] nearbyWeapons = Physics2D.OverlapCircleAll(transform.position, 1f);
+
+        foreach (Collider2D collider in nearbyWeapons)
+        {
+            if (collider.CompareTag("Weapon") && Input.GetKeyDown(KeyCode.E) && !gun.isReloading){
+                PlaySound(pickupClip);
+                gun.Replace(collider.GetComponent<GunBehaviour>());
+                break;
+            }
+
+            if (collider.CompareTag("HealthPotion") && Input.GetKeyDown(KeyCode.E)){
+                Heal(200f);
+                Destroy(collider.gameObject);
+                break;
+            }
+
+            if (collider.CompareTag("ManaPotion") && Input.GetKeyDown(KeyCode.E)){
+                RestoreMana(200f);
+                Destroy(collider.gameObject);
+                break;
+            }
+
+            if (collider.CompareTag("Coin")){
+                coins++;
+                PlaySound(pickupClip);
+                Destroy(collider.gameObject);
+                break;
+            }
+        }
     }
 
     private void UpdateAmmoIndicator()
@@ -227,6 +269,8 @@ public class PlayerBehaviourScript : MonoBehaviour
         currentMana += amount;
         currentMana = Mathf.Clamp(currentMana, 0, maxMana);
 
+        PlaySound(healClip);
+
         UpdateManaVisual();
     }
 
@@ -269,6 +313,17 @@ public class PlayerBehaviourScript : MonoBehaviour
         var effectObject = Instantiate(UltaEffect, transform.position, Quaternion.identity);
         Destroy(effectObject, 1f);
         PlaySound(ultaClip);
+    }
+
+    public void OnTriggerEnter2D(Collider2D col){
+        if(col.CompareTag("Key")){
+            hasKey = true;
+            Destroy(col.gameObject);
+            PlaySound(pickupClip);
+        }else if(col.CompareTag("Stairs") && hasKey){
+            hasKey = false;
+            dungeonGenerator.NextFloor();
+        }
     }
 
     private void PlaySound(AudioClip clip)

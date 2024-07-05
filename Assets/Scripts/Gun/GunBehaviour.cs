@@ -9,11 +9,11 @@ public class GunBehaviour : MonoBehaviour
 
     [Header("Weapon settings")]
     public bool isPlayerProjectile;
-    public Vector3 projectileOffset;
     public float projectileSpeed;
     public float fireRate;
     public float manaCost;
     private float nextFireTime;
+    public SpriteRenderer spriteRenderer;
 
     [Header("Spread settings")]
     public bool useSpread;
@@ -48,6 +48,7 @@ public class GunBehaviour : MonoBehaviour
         isReloading = false;
         originalScale = transform.localScale;
         audioSource = GetComponent<AudioSource>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
@@ -104,7 +105,7 @@ public class GunBehaviour : MonoBehaviour
 
                 angle += i * bulletSpreadAngle * Mathf.Deg2Rad;
 
-                GameObject projectile = Instantiate(projectilePrefab, transform.position + projectileOffset, Quaternion.Euler(0f, 0f, angle * Mathf.Rad2Deg));
+                GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.Euler(0f, 0f, angle * Mathf.Rad2Deg));
                 projectile.GetComponent<SpriteRenderer>().sprite = projectileSprite;
                 projectile.GetComponent<Projectile>().Initialize(isPlayerProjectile, damage);
                 Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
@@ -134,7 +135,6 @@ public class GunBehaviour : MonoBehaviour
     {
         currentAmmo = 0;
         isReloading = true;
-
 
         yield return new WaitForSeconds(reloadTime);
 
@@ -178,5 +178,44 @@ public class GunBehaviour : MonoBehaviour
         }
 
         transform.localScale = originalScale;
+    }
+
+    public void Replace(GunBehaviour otherGun)
+    {
+        GunBehaviour temp = new GunBehaviour();
+        CopyGunProperties(temp, this);
+        CopyGunProperties(this, otherGun);
+        CopyGunProperties(otherGun, temp);
+
+        Sprite tempSprite = spriteRenderer.sprite;
+        spriteRenderer.sprite = otherGun.spriteRenderer.sprite;
+        otherGun.spriteRenderer.sprite = tempSprite;
+    }
+
+    private void CopyGunProperties(GunBehaviour target, GunBehaviour source)
+    {
+        target.projectilePrefab = source.projectilePrefab;
+        target.projectileSprite = source.projectileSprite;
+        target.isPlayerProjectile = source.isPlayerProjectile;
+        target.projectileSpeed = source.projectileSpeed;
+        target.fireRate = source.fireRate;
+        target.manaCost = source.manaCost;
+        target.nextFireTime = source.nextFireTime;
+        target.useSpread = source.useSpread;
+        target.spreadAngle = source.spreadAngle;
+        target.spreadChance = source.spreadChance;
+        target.damage = source.damage;
+        target.bulletCount = source.bulletCount;
+        target.bulletSpreadAngle = source.bulletSpreadAngle;
+        target.magazineSize = source.magazineSize;
+        target.currentAmmo = source.currentAmmo;
+        target.reloadTime = source.reloadTime;
+        target.isReloading = source.isReloading;
+        target.originalScale = source.originalScale;
+        target.shootAnimationScale = source.shootAnimationScale;
+        target.shootAnimationDuration = source.shootAnimationDuration;
+        target.shootSound = source.shootSound;
+        target.reloadSound = source.reloadSound;
+        target.audioSource = source.audioSource;
     }
 }

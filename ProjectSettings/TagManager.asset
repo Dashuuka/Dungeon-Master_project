@@ -9,6 +9,12 @@ TagManager:
   - Projectile
   - Wall
   - Destroyable
+  - Key
+  - Stairs
+  - Weapon
+  - Coin
+  - ManaPotion
+  - HealthPotion
   layers:
   - Default
   - TransparentFX

@@ -187,9 +187,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
-  maxHP: 1000
+  maxHP: 50
   currentHP: 0
-  damage: 5
+  damage: 10
   attackRange: 1
   attackCooldown: 1
   movementSpeed: 3.5

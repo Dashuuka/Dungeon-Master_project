@@ -13,7 +13,11 @@ public class DungeonGenerator : MonoBehaviour
         public Color wallColor;
         public List<GameObject> randomDecorations;
         public List<GameObject> regularDecorations;
-        public Color decorationColor;
+        public int minRandomDecorations;
+        public int maxRandomDecorations;
+        public int minRegularDecorations;
+        public int maxRegularDecorations;
+        public AudioClip backgroundMusic;  // Добавьте поле для музыки
     }
 
     [Header("Generation Settings")]
@@ -40,9 +44,12 @@ public class DungeonGenerator : MonoBehaviour
     private HashSet<Vector2Int> decorationPositions = new HashSet<Vector2Int>();
 
     private int currentFloorIndex = 0;
+    private List<GameObject> instantiatedObjects = new List<GameObject>();
+    private AudioSource audioSource;
 
     void Awake()
     {
+        audioSource = gameObject.AddComponent<AudioSource>();
         GenerateDungeon();
     }
 
@@ -68,6 +75,8 @@ public class DungeonGenerator : MonoBehaviour
 
         PlacePlayerAndPrefabs(rooms);
         PlaceDecorations(rooms);
+
+        PlayFloorMusic(currentFloor.backgroundMusic);
     }
 
     List<RectInt> GenerateRooms()
@@ -197,6 +206,7 @@ public class DungeonGenerator : MonoBehaviour
         foreach (Vector2Int pos in positions)
         {
             var tile = Instantiate(prefab, new Vector3(pos.x, pos.y, 0), Quaternion.identity);
+            instantiatedObjects.Add(tile);
             var spriteRenderer = tile.GetComponent<SpriteRenderer>();
             spriteRenderer.color = color;
 
@@ -227,13 +237,15 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     Vector2Int spawnPos = GetRandomPointInRoom(rooms[i]);
                     GameObject mobPrefab = currentFloor.enemyPrefabs[Random.Range(0, currentFloor.enemyPrefabs.Count)];
-                    Instantiate(mobPrefab, new Vector3(spawnPos.x, spawnPos.y, 0), Quaternion.identity);
+                    var enemyInstance = Instantiate(mobPrefab, new Vector3(spawnPos.x, spawnPos.y, 0), Quaternion.identity);
+                    instantiatedObjects.Add(enemyInstance);
                 }
             }
 
             RectInt furthestRoom = GetFurthestRoom(startRoomCenter, rooms);
             Vector2Int furthestRoomCenter = GetRoomCenter(furthestRoom);
-            Instantiate(stairsDownPrefab, new Vector3(furthestRoomCenter.x, furthestRoomCenter.y, 0), Quaternion.identity);
+            var stairsInstance = Instantiate(stairsDownPrefab, new Vector3(furthestRoomCenter.x, furthestRoomCenter.y, 0), Quaternion.identity);
+            instantiatedObjects.Add(stairsInstance);
         }
     }
 
@@ -242,7 +254,7 @@ public class DungeonGenerator : MonoBehaviour
         Floor currentFloor = floors[currentFloorIndex];
         foreach (RectInt room in rooms)
         {
-            int randomDecorationCount = Random.Range(2, 8);
+            int randomDecorationCount = Random.Range(currentFloor.minRandomDecorations, currentFloor.maxRandomDecorations + 1);
             for (int i = 0; i < randomDecorationCount; i++)
             {
                 Vector2Int randomPos = GetRandomPointInRoom(room);
@@ -250,12 +262,12 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     GameObject randomDecoration = currentFloor.randomDecorations[Random.Range(0, currentFloor.randomDecorations.Count)];
                     var decorationInstance = Instantiate(randomDecoration, new Vector3(randomPos.x, randomPos.y, 0), Quaternion.Euler(0, 0, Random.Range(0, 360)));
-                    decorationInstance.GetComponent<SpriteRenderer>().color = currentFloor.decorationColor;
+                    instantiatedObjects.Add(decorationInstance);
                     decorationPositions.Add(randomPos);
                 }
             }
 
-            int regularDecorationCount = Random.Range(3, 7);
+            int regularDecorationCount = Random.Range(currentFloor.minRegularDecorations, currentFloor.maxRegularDecorations + 1);
             for (int i = 0; i < regularDecorationCount; i++)
             {
                 Vector2Int regularPos = GetRandomPointInRoom(room);
@@ -263,7 +275,7 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     GameObject regularDecoration = currentFloor.regularDecorations[Random.Range(0, currentFloor.regularDecorations.Count)];
                     var decorationInstance = Instantiate(regularDecoration, new Vector3(regularPos.x, regularPos.y, 0), Quaternion.identity);
-                    decorationInstance.GetComponent<SpriteRenderer>().color = currentFloor.decorationColor;
+                    instantiatedObjects.Add(decorationInstance);
                     decorationPositions.Add(regularPos);
                 }
             }
@@ -297,19 +309,35 @@ public class DungeonGenerator : MonoBehaviour
         return furthestRoom;
     }
 
+    void ClearPreviousFloor()
+    {
+        foreach (var obj in instantiatedObjects)
+        {
+            Destroy(obj);
+        }
+        instantiatedObjects.Clear();
+        floorPositions.Clear();
+        wallPositions.Clear();
+        decorationPositions.Clear();
+    }
+
     public void NextFloor()
     {
         currentFloorIndex++;
         if (currentFloorIndex < floors.Count)
         {
-            floorPositions.Clear();
-            wallPositions.Clear();
-            decorationPositions.Clear();
+            ClearPreviousFloor();
             GenerateDungeon();
         }
         else
         {
             Debug.Log("No more floors available.");
         }
+    }
+
+    void PlayFloorMusic(AudioClip clip)
+    {
+        audioSource.clip = clip;
+        audioSource.Play();
     }
 }
